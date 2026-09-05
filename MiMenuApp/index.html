@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Restaurante Lucila - Menú</title>
+  <style>
+    @font-face {
+      font-family: 'Genty';
+      src: url('fuentes/genty.ttf') format('truetype');
+    }
+    @font-face {
+      font-family: 'LatinaPopular';
+      src: url('fuentes/latina-popular.ttf') format('truetype');
+    }
+    @font-face {
+      font-family: 'Shrikhand';
+      src: url('fuentes/shrikhand.ttf') format('truetype');
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      background-color: #1a1a1a;
+    }
+
+    .rotar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vh;
+      height: 100vw;
+      transform-origin: top left;
+      transform: rotate(90deg) translateY(-100%);
+      overflow: hidden;
+      background-color: #1a1a1a;
+    }
+
+    .contenedor {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: #f5f5f5;
+      position: relative;
+      padding: 30px 25px;
+    }
+
+    /* ---- Bloque superior fijo ---- */
+    .top-fijo {
+      width: 100%;
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    .titulo-svg {
+      width: 100%;
+      display: block;
+      height: auto;
+    }
+
+    /* ---- Texto con degradado (CSS) ---- */
+    .texto-degradado {
+      display: inline-block;
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* ---- Línea de precios (MENÚ / + CEVICHE), responsive por JS ---- */
+    .subtitulo-wrapper {
+      width: 100%;
+      overflow: hidden;
+      text-align: center;
+      margin-top: 6px;
+    }
+
+    .subtitulo-linea {
+      display: inline-block;
+      white-space: nowrap;
+      font-family: 'LatinaPopular', sans-serif;
+      font-size: 2.4em;
+      letter-spacing: 1px;
+      transform-origin: center top;
+    }
+
+    .subtitulo-linea .precio {
+      font-family: 'Shrikhand', cursive;
+      color: #ffffff;
+      margin: 0 12px;
+    }
+
+    /* ---- Zona de platos (se reescala automáticamente) ---- */
+    .zona-platos-wrapper {
+      flex: 1;
+      width: 100%;
+      overflow: hidden;
+      position: relative;
+      margin-top: 10px;
+    }
+
+    .zona-platos {
+      width: 100%;
+      text-align: center;
+      padding: 0 25px;
+    }
+
+    .encabezado-seccion {
+      position: relative;
+      padding: 14px 35px;
+      margin: 35px 0 20px;
+      text-align: center;
+    }
+
+    .encabezado-seccion h2 {
+      font-family: 'Genty', cursive;
+      font-size: 3.8em;
+      letter-spacing: 3px;
+    }
+
+    .img-aji, .img-limon {
+      position: absolute;
+      height: 90px;
+      opacity: 0.41;
+    }
+
+    .img-aji {
+      left: 5px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    .img-limon {
+      right: 5px;
+      top: 68%;
+      transform: translateY(-50%);
+    }
+
+    ul.lista-platos {
+      list-style: none;
+      width: 100%;
+      text-align: left;
+      margin: 0;
+    }
+
+    ul.lista-platos li {
+      font-family: 'LatinaPopular', sans-serif;
+      font-size: 3.8em;
+      margin: 14px 0;
+      letter-spacing: 0.5px;
+      line-height: 1.2;
+    }
+
+    ul.lista-platos li::before {
+      content: "*";
+      margin-right: 8px;
+    }
+
+    ul.lista-platos li.agotado {
+      text-decoration: line-through;
+      color: #888888;
+    }
+
+    /* ---- Bloque inferior fijo (plato especial), responsive por JS ---- */
+        .fijo-abajo {
+      flex-shrink: 0;
+      width: 100%;
+      box-sizing: border-box;
+      padding-left: 14vh;
+      padding-right: 15px;
+      margin-top: 15px;
+    }
+
+    .trucha-wrapper {
+      width: 100%;
+      overflow: visible;
+    }
+
+    .trucha-linea {
+      display: inline-block;
+      white-space: nowrap;
+      font-family: 'Genty', cursive;
+      font-size: 3.2em;
+      letter-spacing: 2px;
+      transform-origin: left top;
+    }
+
+    .trucha-linea .precio-especial {
+      font-family: 'Shrikhand', cursive;
+      color: #ffffff;
+      margin-left: 14px;
+    }
+
+    /* ---- Imagen decorativa fija ---- */
+    .img-pez {
+      position: absolute;
+      bottom: -8vh;
+      left: -19vh;
+      height: 28vh;
+      opacity: 0.41;
+      pointer-events: none;
+    }
+
+    .sin-menu {
+      font-family: 'LatinaPopular', sans-serif;
+      font-size: 2em;
+      color: #888888;
+      margin-top: 60px;
+    }
+  </style>
+</head>
+<body>
+  <div class="rotar">
+    <div class="contenedor" id="contenedor">
+
+      <div class="top-fijo">
+        <svg class="titulo-svg" viewBox="0 0 1200 220" preserveAspectRatio="xMidYMid meet" xmlns:xlink="http://www.w3.org/1999/xlink">
+          <defs>
+            <linearGradient id="gradTitulo" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#ff0000"/>
+              <stop offset="50%" stop-color="#efff00"/>
+              <stop offset="100%" stop-color="#39ff14"/>
+            </linearGradient>
+            <path id="arcoTitulo" d="M30,175 Q600,50 1170,175" fill="none"/>
+          </defs>
+          <text font-family="Genty" font-size="115" fill="url(#gradTitulo)" letter-spacing="2">
+            <textPath xlink:href="#arcoTitulo" href="#arcoTitulo" startOffset="50%" text-anchor="middle">Restaurante Lucila</textPath>
+          </text>
+        </svg>
+
+        <div class="subtitulo-wrapper" id="subtitulo-wrapper">
+          <div class="subtitulo-linea" id="subtitulo-linea"></div>
+        </div>
+      </div>
+
+      <div class="zona-platos-wrapper">
+        <div class="zona-platos" id="zona-platos">
+          <div id="marca-inicio"></div>
+
+          <div class="encabezado-seccion">
+            <img class="img-aji" src="imagenes/AjiM.png" alt="">
+            <h2 id="titulo-entradas"></h2>
+            <img class="img-limon" src="imagenes/LimonM.png" alt="">
+          </div>
+          <ul class="lista-platos" id="lista-entradas-tv"></ul>
+
+          <div class="encabezado-seccion">
+            <h2 id="titulo-segundos"></h2>
+          </div>
+          <ul class="lista-platos" id="lista-segundos-tv"></ul>
+
+          <div id="marca-fin"></div>
+        </div>
+      </div>
+
+            <div class="fijo-abajo">
+        <div class="trucha-wrapper" id="trucha-wrapper">
+          <div class="trucha-linea" id="trucha-linea"></div>
+        </div>
+      </div>
+
+      <img class="img-pez" src="imagenes/PezM.png" alt="">
+    </div>
+  </div>
+
+  <script>
+    var SUPABASE_URL = "https://ggpwmurhrktqcrcfdbig.supabase.co/rest/v1/menus";
+    var SUPABASE_KEY = "sb_publishable_yV2s09nnPu7B7YpSM-p22A_C4IjWFtk";
+    var CLAVE_GUARDADO = "menu-restaurante-actual";
+    var INTERVALO_SINCRONIZACION = 30000;
+
+    var COLORES_SUBTITULO = ["#efff00", "#ff5f1f", "#ff007f"];
+    var COLORES_ENCABEZADOS = ["#efff00", "#ff007f", "#39ff14"];
+
+    function textoDegradado(texto, colores) {
+      var gradiente = "linear-gradient(135deg, " + colores.join(", ") + ")";
+      return '<span class="texto-degradado" style="background-image:' + gradiente + '">' + texto + '</span>';
+    }
+
+    // ---------- Elementos estáticos ----------
+    function pintarElementosFijos() {
+      document.getElementById("subtitulo-linea").innerHTML =
+        textoDegradado("MENÚ", COLORES_SUBTITULO) +
+        '<span class="precio">=S/14</span>' +
+        textoDegradado("+ CEVICHE", COLORES_SUBTITULO) +
+        '<span class="precio">=S/16</span>';
+
+      document.getElementById("titulo-entradas").innerHTML =
+        textoDegradado("Entradas", COLORES_ENCABEZADOS);
+
+      document.getElementById("titulo-segundos").innerHTML =
+        textoDegradado("Segundos", COLORES_ENCABEZADOS);
+
+      document.getElementById("trucha-linea").innerHTML =
+        textoDegradado("Trucha Frita", COLORES_ENCABEZADOS) +
+        '<span class="precio-especial">= S/18</span>';
+    }
+
+    // ---------- Guardado / lectura local ----------
+    function guardarMenu(menu) {
+      localStorage.setItem(CLAVE_GUARDADO, JSON.stringify(menu));
+    }
+
+    function leerMenuGuardado() {
+      var datos = localStorage.getItem(CLAVE_GUARDADO);
+      return datos ? JSON.parse(datos) : null;
+    }
+
+    function pintarLista(items) {
+      var html = "";
+      for (var i = 0; i < items.length; i++) {
+        var item = items[i];
+        var claseAgotado = item.agotado ? "agotado" : "";
+        html += '<li class="' + claseAgotado + '">' + item.nombre + '</li>';
+      }
+      return html;
+    }
+
+    function pintarPlatos(menu) {
+      document.getElementById("lista-entradas-tv").innerHTML = pintarLista(menu.entradas || []);
+      document.getElementById("lista-segundos-tv").innerHTML = pintarLista(menu.segundos || []);
+      reajustarVariasVeces();
+    }
+
+    function mostrarSinMenu() {
+      document.getElementById("lista-entradas-tv").innerHTML = "";
+      document.getElementById("lista-segundos-tv").innerHTML =
+        '<div class="sin-menu">Todavía no hay menú publicado</div>';
+      reajustarVariasVeces();
+    }
+
+    // ---------- Reescalar el bloque de platos (usa .left por la rotación) ----------
+function medirAltoContenido() {
+      var inicio = document.getElementById("marca-inicio");
+      var fin = document.getElementById("marca-fin");
+      return Math.abs(fin.offsetTop - inicio.offsetTop);
+    }
+
+    function aplicarTamanoFuentePlatos(factor) {
+      var zona = document.getElementById("zona-platos");
+      var encabezados = zona.getElementsByTagName("h2");
+      var items = zona.getElementsByTagName("li");
+      var i;
+      for (i = 0; i < encabezados.length; i++) {
+        encabezados[i].style.fontSize = (3.8 * factor) + "em";
+      }
+      for (i = 0; i < items.length; i++) {
+        items[i].style.fontSize = (3.8 * factor) + "em";
+      }
+    }
+
+    function ajustarEscala() {
+      var zona = document.getElementById("zona-platos");
+      var wrapper = zona.parentElement;
+      var factor = 1;
+      var pasos = 0;
+
+      aplicarTamanoFuentePlatos(factor);
+
+      var altoDisponible = wrapper.clientHeight;
+      var altoContenido = medirAltoContenido();
+
+      while (altoContenido > altoDisponible && factor > 0.15 && pasos < 30) {
+        factor -= 0.05;
+        aplicarTamanoFuentePlatos(factor);
+        altoContenido = medirAltoContenido();
+        pasos++;
+      }
+
+      while (altoContenido < altoDisponible * 0.92 && factor < 1.8 && pasos < 50) {
+        factor += 0.05;
+        aplicarTamanoFuentePlatos(factor);
+        altoContenido = medirAltoContenido();
+        pasos++;
+      }
+    }
+    // ---------- Reescalar líneas de texto (MENÚ/Ceviche y Trucha Frita) ----------
+    // Usa clientWidth/scrollWidth (propiedades de layout) en vez de
+    // getBoundingClientRect, porque estas SÍ funcionan bien sin importar
+    // la rotación de toda la página con CSS.
+    function ajustarLineaResponsive(idLinea, idWrapper, escalaMin, escalaMax) {
+      var linea = document.getElementById(idLinea);
+      var wrapper = document.getElementById(idWrapper);
+
+      linea.style.transform = "scale(1)";
+
+      var disponible = wrapper.clientWidth;
+      var necesario = linea.scrollWidth;
+
+      if (necesario <= 0) {
+        return;
+      }
+
+      var escala = disponible / necesario;
+      escala = Math.min(escalaMax, Math.max(escalaMin, escala));
+
+      linea.style.transform = "scale(" + escala + ")";
+    }
+
+    function ajustarTextosResponsive() {
+      ajustarLineaResponsive("subtitulo-linea", "subtitulo-wrapper", 0.3, 3);
+      ajustarLineaResponsive("trucha-linea", "trucha-wrapper", 0.3, 3);
+    }
+
+    function reajustarVariasVeces() {
+      ajustarEscala();
+      setTimeout(ajustarEscala, 400);
+      setTimeout(ajustarEscala, 1000);
+      setTimeout(ajustarEscala, 2000);
+
+      try {
+        if (document.fonts && document.fonts.ready && typeof document.fonts.ready.then === "function") {
+          document.fonts.ready.then(ajustarEscala);
+        }
+      } catch (e) {
+        // Si esta TV no soporta bien esta API, los setTimeout de arriba
+        // ya se encargan de reajustar el tamaño.
+      }
+    }
+
+    function reajustarTextosFijosVariasVeces() {
+      ajustarTextosResponsive();
+      setTimeout(ajustarTextosResponsive, 400);
+      setTimeout(ajustarTextosResponsive, 1000);
+      setTimeout(ajustarTextosResponsive, 2000);
+
+      try {
+        if (document.fonts && document.fonts.ready && typeof document.fonts.ready.then === "function") {
+          document.fonts.ready.then(ajustarTextosResponsive);
+        }
+      } catch (e) {
+        // Igual que arriba: los setTimeout ya cubren este caso.
+      }
+    }
+
+    // ---------- Comunicación con Supabase (sin fetch, sin async/await) ----------
+    function buscarMenuEnServidor(callback) {
+      var xhr = new XMLHttpRequest();
+      var url = SUPABASE_URL + "?select=contenido&order=created_at.desc&limit=1";
+
+      xhr.open("GET", url, true);
+      xhr.setRequestHeader("apikey", SUPABASE_KEY);
+      xhr.setRequestHeader("Authorization", "Bearer " + SUPABASE_KEY);
+
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+          if (xhr.status >= 200 && xhr.status < 300) {
+            try {
+              var filas = JSON.parse(xhr.responseText);
+              if (filas.length === 0) {
+                callback(null);
+              } else {
+                callback(filas[0].contenido);
+              }
+            } catch (e) {
+              callback(null);
+            }
+          } else {
+            callback(null);
+          }
+        }
+      };
+
+      xhr.onerror = function () {
+        callback(null);
+      };
+
+      xhr.send();
+    }
+
+    function sincronizar() {
+      buscarMenuEnServidor(function (menuDelServidor) {
+        if (menuDelServidor) {
+          guardarMenu(menuDelServidor);
+          pintarPlatos(menuDelServidor);
+        } else {
+          var menuGuardado = leerMenuGuardado();
+          if (menuGuardado) {
+            pintarPlatos(menuGuardado);
+          } else {
+            mostrarSinMenu();
+          }
+        }
+      });
+    }
+
+    function iniciar() {
+      pintarElementosFijos();
+      reajustarTextosFijosVariasVeces();
+      sincronizar();
+      setInterval(sincronizar, INTERVALO_SINCRONIZACION);
+      window.addEventListener("resize", function () {
+        ajustarEscala();
+        ajustarTextosResponsive();
+      });
+    }
+
+    iniciar();
+  </script>
+</body>
+</html>

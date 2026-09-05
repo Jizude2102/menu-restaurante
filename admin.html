@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Administrar Menú</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: #1a1a1a;
+      color: #f5f5f5;
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 1.6em;
+      margin-bottom: 25px;
+      color: #f0c040;
+    }
+
+    .oculto {
+      display: none;
+    }
+
+    .seccion {
+      margin-bottom: 30px;
+    }
+
+    .seccion-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .seccion-header h2 {
+      font-size: 1.2em;
+      letter-spacing: 2px;
+      color: #f0c040;
+    }
+
+    .btn-agregar {
+      background-color: #f0c040;
+      color: #1a1a1a;
+      border: none;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      font-size: 1.4em;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .fila-entrada, .fila-segundo {
+      background-color: #262626;
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    input[type="text"] {
+      background-color: #333333;
+      border: 1px solid #444444;
+      border-radius: 6px;
+      color: #f5f5f5;
+      padding: 10px;
+      font-size: 1em;
+      width: 100%;
+    }
+
+    input::placeholder {
+      color: #888888;
+    }
+
+    .btn-quitar {
+      background: none;
+      border: none;
+      color: #cc5555;
+      font-size: 0.9em;
+      align-self: flex-end;
+      cursor: pointer;
+      padding: 4px 8px;
+    }
+
+    .btn-publicar {
+      width: 100%;
+      background-color: #f0c040;
+      color: #1a1a1a;
+      border: none;
+      border-radius: 8px;
+      padding: 16px;
+      font-size: 1.2em;
+      font-weight: bold;
+      letter-spacing: 2px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    .btn-publicar:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .mensaje-estado {
+      text-align: center;
+      margin-top: 15px;
+      font-size: 0.95em;
+      display: none;
+    }
+
+    .mensaje-estado.mostrar {
+      display: block;
+    }
+
+    .mensaje-estado.exito {
+      color: #7ac97a;
+    }
+
+    .mensaje-estado.error {
+      color: #cc5555;
+    }
+
+    .btn-renovar {
+      width: 100%;
+      background-color: #333333;
+      color: #f5f5f5;
+      border: 1px solid #555555;
+      border-radius: 8px;
+      padding: 14px;
+      font-size: 1em;
+      letter-spacing: 1px;
+      cursor: pointer;
+      margin-bottom: 25px;
+    }
+
+    .item-admin {
+      background-color: #262626;
+      border-radius: 8px;
+      padding: 12px 14px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .item-nombre {
+      flex: 1;
+      font-size: 1.05em;
+    }
+
+    .item-nombre.agotado {
+      text-decoration: line-through;
+      color: #888888;
+    }
+
+    .item-acciones {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-toggle {
+      border: none;
+      border-radius: 50%;
+      width: 34px;
+      height: 34px;
+      font-size: 1em;
+      font-weight: bold;
+      cursor: pointer;
+      color: #ffffff;
+    }
+
+    .btn-toggle.disponible {
+      background-color: #cc4444;
+    }
+
+    .btn-toggle.agotado-btn {
+      background-color: #4caf50;
+    }
+
+    .btn-cambiar {
+      background-color: #444444;
+      color: #f5f5f5;
+      border: none;
+      border-radius: 6px;
+      padding: 8px 10px;
+      font-size: 0.85em;
+      cursor: pointer;
+    }
+
+    .editor-presa {
+      background-color: #262626;
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 10px;
+    }
+
+    .editor-presa .fila-botones {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .editor-presa button {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.95em;
+      cursor: pointer;
+    }
+
+    .btn-guardar-presa {
+      background-color: #f0c040;
+      color: #1a1a1a;
+      font-weight: bold;
+    }
+
+    .btn-cancelar-presa {
+      background-color: #444444;
+      color: #f5f5f5;
+    }
+  </style>
+</head>
+<body>
+  <h1>ADMINISTRAR MENÚ</h1>
+
+  <div id="pantalla-crear">
+    <div class="seccion">
+      <div class="seccion-header">
+        <h2>ENTRADAS</h2>
+        <button class="btn-agregar" onclick="agregarEntrada()">+</button>
+      </div>
+      <div id="lista-entradas"></div>
+    </div>
+
+    <div class="seccion">
+      <div class="seccion-header">
+        <h2>SEGUNDOS</h2>
+        <button class="btn-agregar" onclick="agregarSegundo()">+</button>
+      </div>
+      <div id="lista-segundos"></div>
+    </div>
+
+    <button class="btn-publicar" id="btn-publicar" onclick="publicar()">PUBLICAR</button>
+    <div class="mensaje-estado" id="mensaje-estado"></div>
+  </div>
+
+  <div id="pantalla-administrar" class="oculto">
+    <button class="btn-renovar" onclick="renovarTodo()">RENOVAR TODO</button>
+
+    <div class="seccion">
+      <h2 style="color:#f0c040; letter-spacing:2px; margin-bottom:12px;">ENTRADAS</h2>
+      <div id="admin-entradas"></div>
+    </div>
+
+    <div class="seccion">
+      <h2 style="color:#f0c040; letter-spacing:2px; margin-bottom:12px;">SEGUNDOS</h2>
+      <div id="admin-segundos"></div>
+    </div>
+  </div>
+
+  <script>
+    const SUPABASE_URL = "https://ggpwmurhrktqcrcfdbig.supabase.co/rest/v1/menus";
+    const SUPABASE_KEY = "sb_publishable_yV2s09nnPu7B7YpSM-p22A_C4IjWFtk";
+    const ID_FILA_MENU = 1;
+    const PRECIOS_FIJOS = "MENÚ S/12 + CEVICHE S/14";
+
+    let contadorEntradas = 0;
+    let contadorSegundos = 0;
+    let menuActual = null;
+    let editandoIndex = null;
+
+    // Repara datos antiguos: separa plato/presa comparando SIN importar mayúsculas/minúsculas
+    function normalizarSegundo(item) {
+      if (item.plato) return item;
+
+      const nombre = item.nombre || "";
+      let plato = nombre;
+
+      if (item.presa) {
+        const nombreUpper = nombre.toUpperCase();
+        const sufijoUpper = ` CON ${item.presa.toUpperCase()}`;
+        if (nombreUpper.endsWith(sufijoUpper)) {
+          plato = nombre.slice(0, nombre.length - sufijoUpper.length);
+        }
+      }
+
+      return {
+        ...item,
+        plato: plato.trim(),
+        presa: item.presa ? item.presa.toUpperCase() : item.presa
+      };
+    }
+
+    function normalizarMenu(menu) {
+      return {
+        ...menu,
+        segundos: (menu.segundos || []).map(normalizarSegundo)
+      };
+    }
+
+    function agregarEntrada() {
+      contadorEntradas++;
+      const id = `entrada-${contadorEntradas}`;
+      const div = document.createElement("div");
+      div.className = "fila-entrada";
+      div.id = id;
+      div.innerHTML = `
+        <input type="text" placeholder="Nombre de la entrada">
+        <button class="btn-quitar" onclick="quitarFila('${id}')">Quitar</button>
+      `;
+      document.getElementById("lista-entradas").appendChild(div);
+    }
+
+    function agregarSegundo() {
+      contadorSegundos++;
+      const id = `segundo-${contadorSegundos}`;
+      const div = document.createElement("div");
+      div.className = "fila-segundo";
+      div.id = id;
+      div.innerHTML = `
+        <input type="text" placeholder="Plato (ej: Arverja)" class="campo-plato">
+        <input type="text" placeholder="Presa (opcional, ej: Pescado frito)" class="campo-presa">
+        <button class="btn-quitar" onclick="quitarFila('${id}')">Quitar</button>
+      `;
+      document.getElementById("lista-segundos").appendChild(div);
+    }
+
+    function quitarFila(id) {
+      document.getElementById(id).remove();
+    }
+
+    function armarNombreSegundo(plato, presa) {
+      if (!presa || presa.trim() === "") return (plato || "").trim();
+      return `${(plato || "").trim()} con ${presa.trim()}`;
+    }
+
+    function mostrarMensaje(texto, tipo) {
+      const mensaje = document.getElementById("mensaje-estado");
+      mensaje.textContent = texto;
+      mensaje.className = `mensaje-estado mostrar ${tipo}`;
+    }
+
+    async function publicar() {
+      const entradas = [];
+      document.querySelectorAll(".fila-entrada input").forEach(input => {
+        if (input.value.trim() !== "") {
+          entradas.push({ nombre: input.value.trim().toUpperCase(), agotado: false });
+        }
+      });
+
+      const segundos = [];
+      document.querySelectorAll(".fila-segundo").forEach(fila => {
+        const plato = fila.querySelector(".campo-plato").value;
+        const presa = fila.querySelector(".campo-presa").value;
+        if (plato.trim() !== "") {
+          segundos.push({
+            plato: plato.trim().toUpperCase(),
+            presa: presa.trim() !== "" ? presa.trim().toUpperCase() : null,
+            nombre: armarNombreSegundo(plato, presa).toUpperCase(),
+            agotado: false
+          });
+        }
+      });
+
+      if (entradas.length === 0 && segundos.length === 0) {
+        alert("Agrega al menos una entrada o un segundo antes de publicar.");
+        return;
+      }
+
+      const menu = { precios: PRECIOS_FIJOS, entradas, segundos };
+
+      const boton = document.getElementById("btn-publicar");
+      boton.disabled = true;
+      boton.textContent = "PUBLICANDO...";
+
+      const exito = await actualizarSupabase(menu);
+
+      boton.disabled = false;
+      boton.textContent = "PUBLICAR";
+
+      if (exito) {
+        menuActual = menu;
+        mostrarPantallaAdministrar();
+      } else {
+        mostrarMensaje("✗ No se pudo publicar. Revisa tu conexión a internet.", "error");
+      }
+    }
+
+    async function actualizarSupabase(menu) {
+      try {
+        const url = `${SUPABASE_URL}?id=eq.${ID_FILA_MENU}`;
+        const respuesta = await fetch(url, {
+          method: "PATCH",
+          headers: {
+            apikey: SUPABASE_KEY,
+            Authorization: `Bearer ${SUPABASE_KEY}`,
+            "Content-Type": "application/json",
+            Prefer: "return=minimal"
+          },
+          body: JSON.stringify({ contenido: menu })
+        });
+        return respuesta.ok;
+      } catch (error) {
+        console.log("Error actualizando Supabase:", error.message);
+        return false;
+      }
+    }
+
+    async function buscarMenuPublicado() {
+      try {
+        const url = `${SUPABASE_URL}?select=contenido&id=eq.${ID_FILA_MENU}`;
+        const respuesta = await fetch(url, {
+          headers: {
+            apikey: SUPABASE_KEY,
+            Authorization: `Bearer ${SUPABASE_KEY}`
+          }
+        });
+        if (!respuesta.ok) return null;
+        const filas = await respuesta.json();
+        if (filas.length === 0) return null;
+        const contenido = filas[0].contenido;
+        if (!contenido || ((contenido.entradas || []).length === 0 && (contenido.segundos || []).length === 0)) {
+          return null;
+        }
+        return normalizarMenu(contenido);
+      } catch (error) {
+        return null;
+      }
+    }
+
+    function mostrarPantallaAdministrar() {
+      document.getElementById("pantalla-crear").classList.add("oculto");
+      document.getElementById("pantalla-administrar").classList.remove("oculto");
+      renderizarAdmin();
+    }
+
+    function mostrarPantallaCrear() {
+      document.getElementById("pantalla-administrar").classList.add("oculto");
+      document.getElementById("pantalla-crear").classList.remove("oculto");
+    }
+
+    function renderizarAdmin() {
+      const contEntradas = document.getElementById("admin-entradas");
+      contEntradas.innerHTML = menuActual.entradas.map((item, i) => `
+        <div class="item-admin">
+          <div class="item-nombre ${item.agotado ? 'agotado' : ''}">${item.nombre}</div>
+          <div class="item-acciones">
+            <button class="btn-toggle ${item.agotado ? 'agotado-btn' : 'disponible'}"
+              onclick="toggleAgotado('entradas', ${i})">
+              ${item.agotado ? '✓' : '✕'}
+            </button>
+          </div>
+        </div>
+      `).join("");
+
+      const contSegundos = document.getElementById("admin-segundos");
+      contSegundos.innerHTML = menuActual.segundos.map((item, i) => {
+        if (editandoIndex === i) {
+          return `
+            <div class="editor-presa">
+              <div style="margin-bottom:8px; color:#f0c040;">${item.plato}</div>
+              <input type="text" id="input-nueva-presa" value="${item.presa || ''}" placeholder="Nueva presa">
+              <div class="fila-botones">
+                <button class="btn-guardar-presa" onclick="guardarNuevaPresa(${i})">Guardar</button>
+                <button class="btn-cancelar-presa" onclick="cancelarEdicion()">Cancelar</button>
+              </div>
+            </div>
+          `;
+        }
+        return `
+          <div class="item-admin">
+            <div class="item-nombre ${item.agotado ? 'agotado' : ''}">${item.nombre}</div>
+            <div class="item-acciones">
+              ${item.presa ? `<button class="btn-cambiar" onclick="editarPresa(${i})">CAMBIAR</button>` : ''}
+              <button class="btn-toggle ${item.agotado ? 'agotado-btn' : 'disponible'}"
+                onclick="toggleAgotado('segundos', ${i})">
+                ${item.agotado ? '✓' : '✕'}
+              </button>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    async function toggleAgotado(tipo, index) {
+      menuActual[tipo][index].agotado = !menuActual[tipo][index].agotado;
+      renderizarAdmin();
+      await actualizarSupabase(menuActual);
+    }
+
+    function editarPresa(index) {
+      editandoIndex = index;
+      renderizarAdmin();
+    }
+
+    function cancelarEdicion() {
+      editandoIndex = null;
+      renderizarAdmin();
+    }
+
+    async function guardarNuevaPresa(index) {
+      const nuevaPresa = document.getElementById("input-nueva-presa").value.trim();
+      if (nuevaPresa === "") {
+        alert("Escribe una presa.");
+        return;
+      }
+      const item = menuActual.segundos[index];
+      item.presa = nuevaPresa.toUpperCase();
+      item.nombre = armarNombreSegundo(item.plato, nuevaPresa).toUpperCase();
+      editandoIndex = null;
+      renderizarAdmin();
+      await actualizarSupabase(menuActual);
+    }
+
+    async function renovarTodo() {
+      menuActual = null;
+      editandoIndex = null;
+      document.getElementById("lista-entradas").innerHTML = "";
+      document.getElementById("lista-segundos").innerHTML = "";
+      contadorEntradas = 0;
+      contadorSegundos = 0;
+      document.getElementById("mensaje-estado").className = "mensaje-estado";
+      mostrarPantallaCrear();
+    }
+
+    async function iniciar() {
+      const publicado = await buscarMenuPublicado();
+      if (publicado) {
+        menuActual = publicado;
+        mostrarPantallaAdministrar();
+      } else {
+        mostrarPantallaCrear();
+      }
+    }
+
+    iniciar();
+  </script>
+</body>
+</html>
